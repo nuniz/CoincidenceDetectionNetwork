@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import combinations
 
 from coincidence_integral import coincidence_integral
 
@@ -30,9 +31,9 @@ def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: flo
     return output
 
 
-def _ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
+def _all_spikes_ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     """
-    Calculates the excitatory-excitatory interaction.
+    An all-spike EE cell generates a spike whenever all of its inputs spikes during an interval ∆.
 
     Parameters:
         inputs (np.ndarray): 2D array of excitatory inputs.
@@ -43,45 +44,43 @@ def _ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
         np.ndarray: Output after applying the excitatory-excitatory interaction.
     """
     assert inputs.ndim == 2, "Excitatory inputs must be a 2D array."
-    num_inputs, samples = inputs.shape
+    n_inputs, samples = inputs.shape
 
     coincidence_integral_outputs = coincidence_integral(inputs, delta_s, fs)
     coincidence_prod = np.prod(coincidence_integral_outputs, axis=0)
 
     output = np.zeros(samples)
-    for i in range(num_inputs):
+    for i in range(n_inputs):
         output += inputs[i] * coincidence_prod / coincidence_integral_outputs[i]
     return output
 
 
-def ee(inputs, min_inputs: int, delta_s: float, fs: float) -> np.ndarray:
+def _exactly_n_spikes_ee(inputs: np.ndarray, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
     """
-    A general EE cell (depicted in Figure 2-6) has N excitatory inputs.
-    It generates a spike whenever at least min_input of its inputs spikes during an interval ∆.
+    An all-spikes EE cell generates a spike whenever exactly n_spikes of its inputs spikes during an interval ∆.
 
-    Parameters
+    Parameters:
         inputs (np.ndarray): 2D array of excitatory inputs.
-        min_inputs (int): Minimum number of inputs that must spike.
-        delta_s (float): Coincidence integration duration in seconds.
+        n_spikes (int): Exact number of inputs that must spike.
         fs (float): Sampling frequency.
+        delta_s: Coincidence integration duration in seconds.
 
     Returns:
-        np.ndarray: Output after applying the excitatory-excitatory interaction with the specified criteria.
-
-    Raises:
-        ValueError: If inputs are not 2D or if min_inputs exceeds the number of inputs.
+        np.ndarray: Output after applying the excitatory-excitatory interaction.
     """
-    if inputs.ndim != 2:
-        raise ValueError("Excitatory inputs must be a 2D array.")
+    assert inputs.ndim == 2, "Excitatory inputs must be a 2D array."
 
-    num_inputs, samples = inputs.shape
-    if min_inputs > num_inputs:
-        raise ValueError("min_inputs should be less than or equal to the number of inputs.")
+    n_inputs, samples = inputs.shape
+    if n_spikes <= n_inputs:
+        raise ValueError("n_spikes should be less than or equal to the number of inputs.")
 
     output = np.zeros(samples)
-    for i in range(min_inputs, num_inputs + 1):
-        output += _ee(inputs, delta_s, fs)
-
+    binomial_combinations = list(combinations(range(n_inputs), n_spikes))
+    for comb in binomial_combinations:
+        indices_spike = set(comb)
+        indices_not_spike = set(range(n_inputs)) - indices_spike
+        output += ei(excitatory_input=_all_spikes_ee(inputs=inputs[indices_spike], delta_s=delta_s, fs=fs),
+                     inhibitory_inputs=inputs[indices_not_spike], delta_s=delta_s, fs=fs)
     return output
 
 
@@ -99,9 +98,39 @@ def simple_ee(inputs, delta_s: float, fs: float) -> np.ndarray:
         np.ndarray: Output after applying the excitatory-excitatory interaction with the specified criteria.
 
     Raises:
-        ValueError: If inputs are not 2D or if min_inputs exceeds the number of inputs.
+        ValueError: If inputs are not 2D.
     """
     if inputs.ndim != 2:
         raise ValueError("Excitatory inputs must be a 2D array.")
 
-    return _ee(inputs, delta_s, fs)
+    return _all_spikes_ee(inputs, delta_s, fs)
+
+
+def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
+    """
+    A general EE cell generates a spike whenever at least min_input of its inputs spikes during an interval ∆.
+
+    Parameters
+        inputs (np.ndarray): 2D array of excitatory inputs.
+        n_spikes (int): Minimum number of inputs that must spike.
+        delta_s (float): Coincidence integration duration in seconds.
+        fs (float): Sampling frequency.
+
+    Returns:
+        np.ndarray: Output after applying the excitatory-excitatory interaction with the specified criteria.
+
+    Raises:
+        ValueError: If inputs are not 2D or if min_spike_inputs exceeds the number of inputs.
+    """
+    if inputs.ndim != 2:
+        raise ValueError("Excitatory inputs must be a 2D array.")
+
+    n_inputs, samples = inputs.shape
+    if n_spikes <= n_inputs:
+        raise ValueError("n_spikes should be less than or equal to the number of inputs.")
+
+    output = np.zeros(samples)
+    for i in range(n_spikes, n_inputs + 1):
+        output += _exactly_n_spikes_ee(inputs, i, delta_s, fs)
+
+    return output
