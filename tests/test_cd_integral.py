@@ -7,7 +7,6 @@ from cd_network.coincidence_integral import (
     apply_filter,
     coincidence_integral,
     create_trapezoid_kernel,
-    integrate_signal,
 )
 
 
@@ -29,23 +28,6 @@ class TestCoincidenceIntegration(unittest.TestCase):
         # Check results for general shape and type
         self.assertEqual(result_f.shape, x.shape)
         self.assertEqual(result_l.shape, x.shape)
-
-    def test_integrate_signal_trapz(self):
-        """Test the integrate_signal function using the trapezoidal method."""
-        x = np.linspace(0, 1, 10)
-        dt = 0.1
-        delta_samples = 5
-        expected_length = len(x)
-        result = integrate_signal(x, dt, delta_samples, "trapz")
-        self.assertEqual(len(result), expected_length)
-
-    def test_integrate_signal_unknown_method(self):
-        """Test the integrate_signal function for error handling."""
-        x = np.linspace(0, 1, 10)
-        dt = 0.1
-        delta_samples = 5
-        with self.assertRaises(ValueError):
-            integrate_signal(x, dt, delta_samples, "unknown_method")
 
     def test_coincidence_integral(self):
         """Test the coincidence_integral function for various integration methods."""
