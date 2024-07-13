@@ -66,6 +66,12 @@ cd CoincidenceDetectionNetwork
 pip install .
 ```
 
+## Contribution
+run pre-commit to check all files in the repo.
+```bash 
+pre-commit run --all-files
+```
+
 ## Reference
 
 Krips R, Furst M. Stochastic properties of auditory brainstem coincidence detectors in binaural perception.

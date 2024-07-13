@@ -29,5 +29,5 @@ J Acoust Soc Am. 2009 Mar;125(3):1567-83. doi: 10.1121/1.3068446. PMID: 19275315
 
 """
 
-from .cells import ei, ee, simple_ee, cd
+from .cells import cd, ee, ei, simple_ee
 from .version import __version__

@@ -14,7 +14,9 @@ def validate_inputs(inputs, expected_dims, var_name="input"):
         ValueError: If the input array's dimensionality is not in the expected dimensions.
     """
     if inputs.ndim not in expected_dims:
-        raise ValueError(f"{var_name} must be {' or '.join(map(str, expected_dims))}D array.")
+        raise ValueError(
+            f"{var_name} must be {' or '.join(map(str, expected_dims))}D array."
+        )
     return inputs
 
 

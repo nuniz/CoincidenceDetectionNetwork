@@ -5,11 +5,11 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="cd_network",
-    version="0.1.0",
+    version="0.1.1",
     author="Asaf Zorea",
     author_email="zoreasaf@gmail.com",
     description="A framework designed to calculate the output of neurons based on non-homogeneous Poisson processes "
-                "and rate statistic calculations",
+    "and rate statistic calculations",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/nuniz/CoincidenceDetectionNetwork",
@@ -18,7 +18,7 @@ setuptools.setup(
     },
     license="MIT",
     packages=setuptools.find_packages(
-        exclude=["tests*", "docs", "examples"]
+        exclude=["tests", "*.tests", "*.tests.*", "tests.*", "tests.*"]
     ),
     include_package_data=True,
     classifiers=[
@@ -30,12 +30,9 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     python_requires=">=3.6",
-    install_requires=[
-        "numpy", "scipy", "functools", "typing", "itertools"
-    ],
+    install_requires=["numpy", "scipy"],
     extras_require={
-        "dev": ["pytest", "check-manifest"],
+        "dev": ["pytest", "check-manifest", "pre-commit"],
         "test": ["pytest", "coverage"],
     },
-    scripts=[]
 )

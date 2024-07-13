@@ -1,10 +1,10 @@
+from functools import lru_cache
 from typing import Callable
 
 import numpy as np
-from scipy import signal, integrate
+from scipy import integrate, signal
 
 from .utils import hashable_input
-from functools import lru_cache
 
 
 def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
@@ -17,10 +17,14 @@ def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
     Returns:
         np.ndarray: The trapezoidal kernel.
     """
-    return np.concatenate(([0], np.ones(samples_integral - 1))) + np.concatenate((np.ones(samples_integral - 1), [0]))
+    return np.concatenate(([0], np.ones(samples_integral - 1))) + np.concatenate(
+        (np.ones(samples_integral - 1), [0])
+    )
 
 
-def apply_filter(x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable) -> np.ndarray:
+def apply_filter(
+    x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable
+) -> np.ndarray:
     """
     Apply a filtering function to an input signal using a specified kernel.
 
@@ -36,7 +40,9 @@ def apply_filter(x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Call
     return filter_func(kernel, 1, x) * dt / 2
 
 
-def integrate_signal(x: np.ndarray, dt: float, delta_samples: int, method: str) -> np.ndarray:
+def integrate_signal(
+    x: np.ndarray, dt: float, delta_samples: int, method: str
+) -> np.ndarray:
     """
     Compute the integral of the input signal using a specified method.
 
@@ -49,8 +55,8 @@ def integrate_signal(x: np.ndarray, dt: float, delta_samples: int, method: str) 
     Returns:
         np.ndarray: The integrated signal.
     """
-    if method not in ['trapz', 'simps', 'romb']:
-        raise ValueError('Unknown integration method.')
+    if method not in ["trapz", "simps", "romb"]:
+        raise ValueError("Unknown integration method.")
 
     num_samples = x.size
     integrated_values = np.zeros(num_samples)
@@ -63,7 +69,9 @@ def integrate_signal(x: np.ndarray, dt: float, delta_samples: int, method: str) 
     return integrated_values
 
 
-def coincidence_integral(x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt") -> np.ndarray:
+def coincidence_integral(
+    x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt"
+) -> np.ndarray:
     """
     Computes the coincidence integral of the input signal.
 
@@ -81,8 +89,8 @@ def coincidence_integral(x: np.ndarray, integration_duration: float, fs: float, 
     kernel = create_trapezoid_kernel(samples_integral)
 
     filter_methods = {
-        'filtfilt': lambda x: apply_filter(x, kernel, dt, signal.filtfilt),
-        'lfilter': lambda x: apply_filter(x, kernel, dt, signal.lfilter)
+        "filtfilt": lambda x: apply_filter(x, kernel, dt, signal.filtfilt),
+        "lfilter": lambda x: apply_filter(x, kernel, dt, signal.lfilter),
     }
     if method in filter_methods:
         return filter_methods[method](x)
