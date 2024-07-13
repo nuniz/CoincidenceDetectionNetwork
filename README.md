@@ -5,7 +5,7 @@ CD) cells.
 These cells receive inputs modeled as non-homogeneous Poisson processes (NHPP) with both excitatory and inhibitory
 components.
 
-![one-sided stft](cd.png)
+![cd_scheme](cd.png)
 
 ## Features
 

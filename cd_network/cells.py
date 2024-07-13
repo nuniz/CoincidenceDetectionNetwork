@@ -107,8 +107,12 @@ def _exactly_n_spikes_ee(
     for comb in binomial_combinations:
         indices_spike = np.array(comb)
         indices_not_spike = np.array(list(set(range(n_inputs)) - set(indices_spike)))
-        if len(indices_not_spike) > 0 & len(indices_spike) > 0:
-            ei_output = ei(
+        if len(indices_not_spike) == 0:
+            output += _all_spikes_ee(
+                inputs=inputs[indices_spike], delta_s=delta_s, fs=fs
+            )
+        else:
+            output += ei(
                 excitatory_input=_all_spikes_ee(
                     inputs=inputs[indices_spike], delta_s=delta_s, fs=fs
                 ),
@@ -116,7 +120,6 @@ def _exactly_n_spikes_ee(
                 delta_s=delta_s,
                 fs=fs,
             )
-            output += ei_output
 
     return output
 

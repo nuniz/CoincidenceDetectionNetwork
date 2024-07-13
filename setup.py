@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="cd_network",
-    version="0.1.2",
+    version="0.1.3",
     author="Asaf Zorea",
     author_email="zoreasaf@gmail.com",
     description="A framework designed to calculate the output of neurons based on non-homogeneous Poisson processes "
@@ -30,9 +30,9 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     python_requires=">=3.6",
-    install_requires=["numpy", "scipy"],
+    install_requires=["numpy<2", "scipy"],
     extras_require={
-        "dev": ["pytest", "check-manifest", "pre-commit"],
+        "dev": ["pytest", "check-manifest", "pre-commit", "matplotlib"],
         "test": ["pytest", "coverage"],
     },
 )

@@ -1,0 +1,41 @@
+{
+  "fs": 1000,
+  "cells": [
+    {
+      "type": "simple_ee",
+      "id": "cell1",
+      "params": {
+        "delta_s": 0.01
+      }
+    },
+    {
+      "type": "ei",
+      "id": "cell2",
+      "params": {
+        "delta_s": 0.01
+      }
+    }
+  ],
+  "connections": [
+    {
+      "source": "external1",
+      "target": "cell1",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "external2",
+      "target": "cell1",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "external1",
+      "target": "cell2",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "external2",
+      "target": "cell2",
+      "input_type": "inhibitory"
+    }
+  ]
+}
