@@ -3,6 +3,9 @@ from typing import Callable
 import numpy as np
 from scipy import signal, integrate
 
+from utils import hashable_input
+from functools import lru_cache
+
 
 def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
     """
@@ -95,3 +98,16 @@ def coincidence_integral(x: np.ndarray, integration_duration: float, fs: float, 
             output[i, :] = integrate_signal(x[i, :], dt, samples_integral, method)
 
     return output
+
+
+@lru_cache(maxsize=None)
+def cached_coincidence_integral_computation(inputs_tuple, delta_s, fs):
+    """Cached version of the coincidence_integral computation, uses hashable input."""
+    inputs = np.array(inputs_tuple)  # Convert tuple back to numpy array
+    return coincidence_integral(inputs, delta_s, fs)
+
+
+def cached_coincidence_integral(inputs, delta_s, fs):
+    """Prepare the input for caching and call the cached computation."""
+    inputs_tuple = hashable_input(inputs)
+    return cached_coincidence_integral_computation(inputs_tuple, delta_s, fs)
