@@ -7,7 +7,12 @@ from .coincidence_integral import cached_coincidence_integral, coincidence_integ
 EPS = 1e-15
 
 
-def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
+def ei(
+    excitatory_input: np.ndarray,
+    inhibitory_inputs: np.ndarray,
+    delta_s: float,
+    fs: float,
+) -> np.ndarray:
     """
     Computes the output of an excitatory-inhibitory (EI) cell. The EI cell generates a spike
     based on the excitatory input, provided there are no spikes in the inhibitory inputs
@@ -28,15 +33,21 @@ def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: flo
     """
     assert excitatory_input.ndim in [1, 2], "Excitatory input must be a 1D or 2D array."
     if excitatory_input.ndim == 2:
-        assert excitatory_input.shape[0] == 1, "If 2D, excitatory input must have a single row."
+        assert (
+            excitatory_input.shape[0] == 1
+        ), "If 2D, excitatory input must have a single row."
         excitatory_input = excitatory_input[0]
 
-    assert inhibitory_inputs.ndim in [1, 2], "Inhibitory inputs must be a 1D or 2D array."
+    assert inhibitory_inputs.ndim in [
+        1,
+        2,
+    ], "Inhibitory inputs must be a 1D or 2D array."
     if inhibitory_inputs.ndim == 1:
         inhibitory_inputs = inhibitory_inputs[np.newaxis, ...]
 
-    assert len(excitatory_input) == inhibitory_inputs.shape[-1], \
-        "Length of excitatory input must match the size of inhibitory inputs along the last axis."
+    assert (
+        len(excitatory_input) == inhibitory_inputs.shape[-1]
+    ), "Length of excitatory input must match the size of inhibitory inputs along the last axis."
 
     output = excitatory_input * np.prod(
         1 - coincidence_integral(inhibitory_inputs, delta_s, fs), axis=0
@@ -69,7 +80,7 @@ def _all_spikes_ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
 
 
 def _exactly_n_spikes_ee(
-        inputs: np.ndarray, n_spikes: int, delta_s: float, fs: float
+    inputs: np.ndarray, n_spikes: int, delta_s: float, fs: float
 ) -> np.ndarray:
     """
     An all-spikes EE cell generates a spike whenever exactly n_spikes of its inputs spikes during an interval ∆.
@@ -87,7 +98,7 @@ def _exactly_n_spikes_ee(
 
     n_inputs, samples = inputs.shape
     assert (
-            n_inputs <= n_inputs
+        n_inputs <= n_inputs
     ), "n_spikes should be less than or equal to the number of inputs."
 
     output = np.zeros(samples)
@@ -153,7 +164,7 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
 
     n_inputs, samples = inputs.shape
     assert (
-            n_inputs <= n_inputs
+        n_inputs <= n_inputs
     ), "n_spikes should be less than or equal to the number of inputs."
 
     output = np.zeros(samples)
@@ -164,11 +175,11 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
 
 
 def cd(
-        excitatory_inputs: np.ndarray,
-        inhibitory_inputs: np.ndarray,
-        n_spikes: int,
-        delta_s: float,
-        fs: float,
+    excitatory_inputs: np.ndarray,
+    inhibitory_inputs: np.ndarray,
+    n_spikes: int,
+    delta_s: float,
+    fs: float,
 ) -> np.ndarray:
     """
     A general CD cell is defined as one with n_excitatory_inputs excitatory inputs and n_inhibitory_inputs inhibitory
@@ -206,7 +217,7 @@ def cd(
     n_inhibitory_inputs, inhibitory_samples = inhibitory_inputs.shape
 
     assert (
-            inhibitory_samples == excitatory_samples
+        inhibitory_samples == excitatory_samples
     ), "Number of samples in inhibitory and excitatory inputs must match."
 
     output = np.zeros(excitatory_samples)

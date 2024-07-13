@@ -1,59 +1,59 @@
 {
-    "fs": 1000,
-    "cells": [
-        {
-            "type": "ei",
-            "id": "cell1",
-            "params": {
-                "delta_s": 0.01
-            }
-        },
-        {
-            "type": "simple_ee",
-            "id": "cell2",
-            "params": {
-                "delta_s": 0.01
-            }
-        },
-        {
-            "type": "cd",
-            "id": "cell3",
-            "params": {
-                "n_spikes": 1,
-                "delta_s": 0.01
-            }
-        }
-    ],
-    "connections": [
-        {
-            "source": "external1",
-            "target": "cell1",
-            "input_type": "excitatory"
-        },
-        {
-            "source": "external2",
-            "target": "cell1",
-            "input_type": "inhibitory"
-        },
-        {
-            "source": "external2",
-            "target": "cell2",
-            "input_type": "excitatory"
-        },
-        {
-            "source": "cell1",
-            "target": "cell2",
-            "input_type": "excitatory"
-        },
-        {
-            "source": "external3",
-            "target": "cell3",
-            "input_type": "inhibitory"
-        },
-        {
-            "source": "cell2",
-            "target": "cell3",
-            "input_type": "excitatory"
-        }
-    ]
+  "fs": 1000,
+  "cells": [
+    {
+      "type": "ei",
+      "id": "cell1",
+      "params": {
+        "delta_s": 0.01
+      }
+    },
+    {
+      "type": "simple_ee",
+      "id": "cell2",
+      "params": {
+        "delta_s": 0.01
+      }
+    },
+    {
+      "type": "cd",
+      "id": "cell3",
+      "params": {
+        "n_spikes": 1,
+        "delta_s": 0.01
+      }
+    }
+  ],
+  "connections": [
+    {
+      "source": "external1",
+      "target": "cell1",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "external2",
+      "target": "cell1",
+      "input_type": "inhibitory"
+    },
+    {
+      "source": "external2",
+      "target": "cell2",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "cell1",
+      "target": "cell2",
+      "input_type": "excitatory"
+    },
+    {
+      "source": "external3",
+      "target": "cell3",
+      "input_type": "inhibitory"
+    },
+    {
+      "source": "cell2",
+      "target": "cell3",
+      "input_type": "excitatory"
+    }
+  ]
 }
