@@ -58,7 +58,13 @@ Models the output of a coincidence detector (CD) cell which generates spikes bas
 
 ## Installation
 
-You can install CD-Network directly from the source code:
+You can install CD-Network directly from pypi:
+
+```bash
+pip install cd_network
+```
+
+Or you can install CD-Network directly from the source code:
 
 ```bash
 git clone https://github.com/nuniz/CoincidenceDetectionNetwork.git

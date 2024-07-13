@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="cd_network",
-    version="0.1.1",
+    version="0.1.2",
     author="Asaf Zorea",
     author_email="zoreasaf@gmail.com",
     description="A framework designed to calculate the output of neurons based on non-homogeneous Poisson processes "
