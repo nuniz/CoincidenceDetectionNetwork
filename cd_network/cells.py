@@ -83,3 +83,25 @@ def ee(inputs, min_inputs: int, delta_s: float, fs: float) -> np.ndarray:
         output += _ee(inputs, delta_s, fs)
 
     return output
+
+
+def simple_ee(inputs, delta_s: float, fs: float) -> np.ndarray:
+    """
+    The simple EE cell generates an output spike whenever both inputs spike within a time interval of less than
+    ∆ seconds.
+
+    Parameters
+        inputs (np.ndarray): 2D array of excitatory inputs.
+        delta_s (float): Coincidence integration duration in seconds.
+        fs (float): Sampling frequency.
+
+    Returns:
+        np.ndarray: Output after applying the excitatory-excitatory interaction with the specified criteria.
+
+    Raises:
+        ValueError: If inputs are not 2D or if min_inputs exceeds the number of inputs.
+    """
+    if inputs.ndim != 2:
+        raise ValueError("Excitatory inputs must be a 2D array.")
+
+    return _ee(inputs, delta_s, fs)
