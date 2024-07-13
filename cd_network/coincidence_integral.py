@@ -50,12 +50,12 @@ def integrate_signal(
         x (np.ndarray): The input signal.
         dt (float): The time step.
         delta_samples (int): Number of samples to shift for delta calculations.
-        method (str): Integration method ('trapz', 'simps', 'romb').
+        method (str): Integration method ('trapz', 'romb').
 
     Returns:
         np.ndarray: The integrated signal.
     """
-    if method not in ["trapz", "simps", "romb"]:
+    if method not in ["trapz", "romb"]:
         raise ValueError("Unknown integration method.")
 
     num_samples = x.size
@@ -79,7 +79,7 @@ def coincidence_integral(
         x (np.ndarray): The input signal.
         integration_duration (float): The duration over which to integrate.
         fs (float): The sampling frequency.
-        method (str): The method for integration ('filtfilt', 'lfilter', 'cumtrapz', 'trapz', 'simps', or 'romb').
+        method (str): The method for integration ('filtfilt', 'lfilter', 'cumtrapz', 'trapz', or 'romb').
 
     Returns:
         np.ndarray: The coincidence integral of the signal.

@@ -39,15 +39,6 @@ class TestCoincidenceIntegration(unittest.TestCase):
         result = integrate_signal(x, dt, delta_samples, "trapz")
         self.assertEqual(len(result), expected_length)
 
-    def test_integrate_signal_simps(self):
-        """Test the integrate_signal function using Simpson's rule."""
-        x = np.linspace(0, 1, 10)
-        dt = 0.1
-        delta_samples = 5
-        expected_length = len(x)
-        result = integrate_signal(x, dt, delta_samples, "simps")
-        self.assertEqual(len(result), expected_length)
-
     def test_integrate_signal_unknown_method(self):
         """Test the integrate_signal function for error handling."""
         x = np.linspace(0, 1, 10)
@@ -64,7 +55,7 @@ class TestCoincidenceIntegration(unittest.TestCase):
         methods = ["filtfilt", "lfilter", "cumtrapz", "trapz", "simps", "romb"]
         for method in methods:
             if (
-                method in ["romb"] and x.shape[1] % 2 == 0
+                    method in ["romb"] and x.shape[1] % 2 == 0
             ):  # Romb requires 2^n + 1 samples
                 continue
             result = coincidence_integral(x, integration_duration, fs, method)
