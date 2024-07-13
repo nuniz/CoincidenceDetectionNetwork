@@ -5,7 +5,7 @@ from cd_network.coincidence_integral import create_trapezoid_kernel, apply_filte
     coincidence_integral
 
 
-class TestCD(unittest.TestCase):
+class TestCoincidenceIntegration(unittest.TestCase):
     def test_create_trapezoid_kernel(self):
         """Test the creation of the trapezoidal kernel."""
         samples_integral = 5

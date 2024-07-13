@@ -3,7 +3,7 @@ from typing import Callable
 import numpy as np
 from scipy import signal, integrate
 
-from utils import hashable_input
+from .utils import hashable_input
 from functools import lru_cache
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 from itertools import combinations
 
-from coincidence_integral import coincidence_integral, cached_coincidence_integral
+from .coincidence_integral import coincidence_integral, cached_coincidence_integral
 
 
 def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
@@ -48,13 +48,10 @@ def _all_spikes_ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     coincidence_integral_outputs = cached_coincidence_integral(inputs, delta_s, fs)
     coincidence_prod = np.prod(coincidence_integral_outputs, axis=0)
 
-    adjusted_inputs = inputs / coincidence_integral_outputs[:, None]
-    output = np.sum(adjusted_inputs, axis=0) * coincidence_prod
-
-    # n_inputs, samples = inputs.shape
-    # output = np.zeros(samples)
-    # for i in range(n_inputs):
-    #     output += inputs[i] * coincidence_prod / coincidence_integral_outputs[i]
+    n_inputs, samples = inputs.shape
+    output = np.zeros(samples)
+    for i in range(n_inputs):
+        output += inputs[i] * coincidence_prod / coincidence_integral_outputs[i]
     return output
 
 
@@ -74,8 +71,7 @@ def _exactly_n_spikes_ee(inputs: np.ndarray, n_spikes: int, delta_s: float, fs: 
     assert inputs.ndim == 2, "Excitatory inputs must be a 2D array."
 
     n_inputs, samples = inputs.shape
-    if n_spikes <= n_inputs:
-        raise ValueError("n_spikes should be less than or equal to the number of inputs.")
+    assert n_inputs <= n_inputs, "n_spikes should be less than or equal to the number of inputs."
 
     output = np.zeros(samples)
     binomial_combinations = list(combinations(range(n_inputs), n_spikes))
@@ -83,9 +79,10 @@ def _exactly_n_spikes_ee(inputs: np.ndarray, n_spikes: int, delta_s: float, fs: 
     for comb in binomial_combinations:
         indices_spike = np.array(comb)
         indices_not_spike = np.array(list(set(range(n_inputs)) - set(indices_spike)))
-        ei_output = ei(excitatory_input=_all_spikes_ee(inputs=inputs[indices_spike], delta_s=delta_s, fs=fs),
-                       inhibitory_inputs=inputs[indices_not_spike], delta_s=delta_s, fs=fs)
-        output += ei_output
+        if len(indices_not_spike) > 0 & len(indices_spike) > 0:
+            ei_output = ei(excitatory_input=_all_spikes_ee(inputs=inputs[indices_spike], delta_s=delta_s, fs=fs),
+                           inhibitory_inputs=inputs[indices_not_spike], delta_s=delta_s, fs=fs)
+            output += ei_output
 
     return output
 
@@ -132,8 +129,7 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
         raise ValueError("Excitatory inputs must be a 2D array.")
 
     n_inputs, samples = inputs.shape
-    if n_spikes <= n_inputs:
-        raise ValueError("n_spikes should be less than or equal to the number of inputs.")
+    assert n_inputs <= n_inputs, "n_spikes should be less than or equal to the number of inputs."
 
     output = np.zeros(samples)
     for i in range(n_spikes, n_inputs + 1):
