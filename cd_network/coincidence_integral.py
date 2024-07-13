@@ -1,14 +1,15 @@
+from typing import Callable
+
 import numpy as np
 from scipy import signal, integrate
-from typing import Union
 
 
 def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
     """
-    Creates a trapezoidal kernel for signal processing.
+    Create a trapezoidal kernel for signal integration.
 
     Parameters:
-        samples_integral (int): The number of samples for integration.
+        samples_integral (int): Number of samples over which to integrate.
 
     Returns:
         np.ndarray: The trapezoidal kernel.
@@ -16,72 +17,46 @@ def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
     return np.concatenate(([0], np.ones(samples_integral - 1))) + np.concatenate((np.ones(samples_integral - 1), [0]))
 
 
-def apply_filter_method(x: np.ndarray, trapezoid_kernel: np.ndarray, dt: float, method: str) -> np.ndarray:
+def apply_filter(x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable) -> np.ndarray:
     """
-    Applies a filtering method to the input signal.
+    Apply a filtering function to an input signal using a specified kernel.
 
     Parameters:
         x (np.ndarray): The input signal.
-        trapezoid_kernel (np.ndarray): The trapezoidal kernel.
+        kernel (np.ndarray): The filter kernel.
         dt (float): The time step.
-        method (str): The filtering method ('filtfilt' or 'lfilter').
+        filter_func (Callable): The filtering function from scipy.signal.
 
     Returns:
         np.ndarray: The filtered signal.
     """
-    if method == 'filtfilt':
-        return signal.filtfilt(trapezoid_kernel, 1, x) * dt / 2
-    elif method == 'lfilter':
-        return signal.lfilter(trapezoid_kernel, 1, x) * dt / 2
-    else:
-        raise ValueError('Unknown filter method.')
+    return filter_func(kernel, 1, x) * dt / 2
 
 
-def integrate_cumtrapz(x: np.ndarray, dt: float, delta_samples: int) -> np.ndarray:
+def integrate_signal(x: np.ndarray, dt: float, delta_samples: int, method: str) -> np.ndarray:
     """
-    Computes the cumulative integral of the input signal using the trapezoidal rule.
+    Compute the integral of the input signal using a specified method.
 
     Parameters:
         x (np.ndarray): The input signal.
         dt (float): The time step.
-        delta_samples (int): The number of samples for the delta calculation.
-
-    Returns:
-        np.ndarray: The cumulative integral of the signal.
-    """
-    cumulative_integral = integrate.cumtrapz(y=x, dx=dt, initial=0)
-    cumulative_integral[delta_samples:] -= cumulative_integral[:-delta_samples]
-    return cumulative_integral
-
-
-def integrate_samples(x: np.ndarray, dt: float, delta_samples: int, method: str) -> np.ndarray:
-    """
-    Integrates the input signal over a sliding window.
-
-    Parameters:
-        x (np.ndarray): The input signal.
-        dt (float): The time step.
-        delta_samples (int): The number of samples for the sliding window.
-        method (str): The integration method ('trapz', 'simps', or 'romb').
+        delta_samples (int): Number of samples to shift for delta calculations.
+        method (str): Integration method ('trapz', 'simps', 'romb').
 
     Returns:
         np.ndarray: The integrated signal.
     """
+    if method not in ['trapz', 'simps', 'romb']:
+        raise ValueError('Unknown integration method.')
+
     num_samples = x.size
     integrated_values = np.zeros(num_samples)
     for j in range(num_samples):
         end_sample = j + 1
         start_sample = max(0, end_sample - delta_samples)
         samples_slice = x[start_sample:end_sample]
-
-        if method == "trapz":
-            integrated_values[j] = integrate.trapz(y=samples_slice, dx=dt)
-        elif method == "simps":
-            integrated_values[j] = integrate.simps(y=samples_slice, dx=dt)
-        elif method == "romb":
-            integrated_values[j] = integrate.romb(y=samples_slice, dx=dt)
-        else:
-            raise ValueError('Unknown integration method.')
+        integrate_func = getattr(integrate, method)
+        integrated_values[j] = integrate_func(y=samples_slice, dx=dt)
     return integrated_values
 
 
@@ -100,19 +75,23 @@ def coincidence_integral(x: np.ndarray, integration_duration: float, fs: float, 
     """
     dt = 1 / fs
     samples_integral = int(np.floor(integration_duration * fs))
-    trapezoid_kernel = create_trapezoid_kernel(samples_integral)
+    kernel = create_trapezoid_kernel(samples_integral)
 
-    if method in ['filtfilt', 'lfilter']:
-        return apply_filter_method(x, trapezoid_kernel, dt, method)
+    filter_methods = {
+        'filtfilt': lambda x: apply_filter(x, kernel, dt, signal.filtfilt),
+        'lfilter': lambda x: apply_filter(x, kernel, dt, signal.lfilter)
+    }
+    if method in filter_methods:
+        return filter_methods[method](x)
 
-    delta_samples = samples_integral
     num_inputs, num_samples = x.shape
     output = np.zeros((num_inputs, num_samples))
 
     for i in range(num_inputs):
         if method == "cumtrapz":
-            output[i, :] = integrate_cumtrapz(x[i, :], dt, delta_samples)
+            output[i, :] = integrate.cumtrapz(y=x[i, :], dx=dt, initial=0)
+            output[i, samples_integral:] -= output[i, :-samples_integral]
         else:
-            output[i, :] = integrate_samples(x[i, :], dt, delta_samples, method)
+            output[i, :] = integrate_signal(x[i, :], dt, samples_integral, method)
 
     return output
