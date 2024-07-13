@@ -89,7 +89,7 @@ def simple_ee(inputs, delta_s: float, fs: float) -> np.ndarray:
     The simple EE cell generates an output spike whenever both inputs spike within a time interval of less than
     ∆ seconds.
 
-    Parameters
+    Parameters:
         inputs (np.ndarray): 2D array of excitatory inputs.
         delta_s (float): Coincidence integration duration in seconds.
         fs (float): Sampling frequency.
@@ -110,7 +110,7 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
     """
     A general EE cell generates a spike whenever at least min_input of its inputs spikes during an interval ∆.
 
-    Parameters
+    Parameters:
         inputs (np.ndarray): 2D array of excitatory inputs.
         n_spikes (int): Minimum number of inputs that must spike.
         delta_s (float): Coincidence integration duration in seconds.
@@ -132,5 +132,55 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
     output = np.zeros(samples)
     for i in range(n_spikes, n_inputs + 1):
         output += _exactly_n_spikes_ee(inputs, i, delta_s, fs)
+
+    return output
+
+
+def cd(excitatory_inputs: np.ndarray, inhibitory_inputs: np.ndarray, n_spikes: int, delta_s: float,
+       fs: float) -> np.ndarray:
+    """
+    A general CD cell is defined as one with n_excitatory_inputs excitatory inputs and n_inhibitory_inputs inhibitory
+    inputs. This type of cell generates a spike if, during an interval of length ∆, there are at least n_spikes more
+    excitatory spikes than inhibitory spikes
+
+    Parameters
+        excitatory_inputs (np.ndarray): Excitatory input spikes, shape (n_excitatory_inputs, excitatory_samples).
+        inhibitory_inputs (np.ndarray): Inhibitory input spikes, shape (n_inhibitory_inputs, inhibitory_samples).
+        n_spikes (int): Minimum excess of excitatory spikes over inhibitory spikes to generate an output spike.
+        delta_s (float): Interval length ∆ in seconds.
+        fs (float): Sampling frequency in Hz.
+
+    Returns:
+        np.ndarray: Output after applying the cd interaction with the specified criteria.
+
+    Raises:
+        ValueError: If inputs are not 2D or if min_inputs exceeds the number of inputs.
+    """
+    assert excitatory_inputs.ndim in [1, 2], "Excitatory inputs must be either 1D or 2D array."
+    assert inhibitory_inputs.ndim in [1, 2], "Inhibitory inputs must be either 1D or 2D array."
+
+    if excitatory_inputs.ndim == 1:
+        excitatory_inputs = excitatory_inputs[np.newaxis, ...]
+    if inhibitory_inputs.ndim == 1:
+        inhibitory_inputs = inhibitory_inputs[np.newaxis, ...]
+
+    n_excitatory_inputs, excitatory_samples = excitatory_inputs.shape
+    n_inhibitory_inputs, inhibitory_samples = inhibitory_inputs.shape
+
+    assert inhibitory_samples == excitatory_samples, "Number of samples in inhibitory and excitatory inputs must match."
+
+    output = np.zeros(excitatory_samples)
+    for i in range(min(n_inhibitory_inputs, n_excitatory_inputs - n_spikes) + 1):
+        if i == 0:
+            output += ei(excitatory_input=ee(excitatory_inputs, n_spikes, delta_s, fs),
+                         inhibitory_inputs=inhibitory_inputs, delta_s=delta_s, fs=fs)
+        elif 1 <= i <= min(inhibitory_samples - 1, excitatory_samples - n_spikes):
+            output += ei(excitatory_input=ee(excitatory_inputs, n_spikes + i, delta_s, fs),
+                         inhibitory_inputs=_all_spikes_ee(inhibitory_inputs, delta_s, fs),
+                         delta_s=delta_s, fs=fs)
+        elif i == inhibitory_inputs:
+            output += ee(excitatory_inputs, n_spikes + i, delta_s, fs)
+        else:
+            raise Exception("Unexpected case in loop.")
 
     return output
