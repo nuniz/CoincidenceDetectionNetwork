@@ -7,13 +7,13 @@ def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: flo
     Calculates the excitatory-inhibitory interaction.
 
     Parameters:
-    excitatory_input (np.ndarray): 1D array of excitatory inputs.
-    inhibitory_inputs (np.ndarray): 1D or 2D array of inhibitory inputs.
-    fs (float): sampling frequency.
-    delta_s: coincidence integration duration in seconds.
+        excitatory_input (np.ndarray): 1D array of excitatory inputs.
+        inhibitory_inputs (np.ndarray): 1D or 2D array of inhibitory inputs.
+        fs (float): sampling frequency.
+        delta_s: coincidence integration duration in seconds.
 
     Returns:
-    np.ndarray: Output after applying the excitatory-inhibitory interaction.
+        np.ndarray: Output after applying the excitatory-inhibitory interaction.
     """
     assert excitatory_input.ndim == 1, "Excitatory input must be a 1D array."
     assert inhibitory_inputs.ndim in [1, 2], "Inhibitory inputs must be either 1D or 2D array."
@@ -33,12 +33,12 @@ def ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     Calculates the simple excitatory-excitatory interaction.
 
     Parameters:
-    inputs (np.ndarray): 2D array of excitatory inputs.
-    fs (float): sampling frequency.
-    delta_s: coincidence integration duration in seconds.
+        inputs (np.ndarray): 2D array of excitatory inputs.
+        fs (float): sampling frequency.
+        delta_s: coincidence integration duration in seconds.
 
     Returns:
-    np.ndarray: Output after applying the excitatory-excitatory interaction.
+        np.ndarray: Output after applying the excitatory-excitatory interaction.
     """
     assert inputs.ndim == 2, "Excitatory inputs must be a 2D array."
     num_inputs, samples = inputs.shape
