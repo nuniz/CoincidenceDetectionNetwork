@@ -23,7 +23,7 @@ def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
 
 
 def apply_filter(
-    x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable
+        x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable
 ) -> np.ndarray:
     """
     Apply a filtering function to an input signal using a specified kernel.
@@ -40,37 +40,8 @@ def apply_filter(
     return filter_func(kernel, 1, x) * dt / 2
 
 
-def integrate_signal(
-    x: np.ndarray, dt: float, delta_samples: int, method: str
-) -> np.ndarray:
-    """
-    Compute the integral of the input signal using a specified method.
-
-    Parameters:
-        x (np.ndarray): The input signal.
-        dt (float): The time step.
-        delta_samples (int): Number of samples to shift for delta calculations.
-        method (str): Integration method ('trapz', 'romb').
-
-    Returns:
-        np.ndarray: The integrated signal.
-    """
-    if method not in ["trapz", "romb"]:
-        raise ValueError("Unknown integration method.")
-
-    num_samples = x.size
-    integrated_values = np.zeros(num_samples)
-    for j in range(num_samples):
-        end_sample = j + 1
-        start_sample = max(0, end_sample - delta_samples)
-        samples_slice = x[start_sample:end_sample]
-        integrate_func = getattr(integrate, method)
-        integrated_values[j] = integrate_func(y=samples_slice, dx=dt)
-    return integrated_values
-
-
 def coincidence_integral(
-    x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt"
+        x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt"
 ) -> np.ndarray:
     """
     Computes the coincidence integral of the input signal.
@@ -79,7 +50,7 @@ def coincidence_integral(
         x (np.ndarray): The input signal.
         integration_duration (float): The duration over which to integrate.
         fs (float): The sampling frequency.
-        method (str): The method for integration ('filtfilt', 'lfilter', 'cumtrapz', 'trapz', or 'romb').
+        method (str): The method for integration ('filtfilt', 'lfilter', 'cumtrapz').
 
     Returns:
         np.ndarray: The coincidence integral of the signal.
@@ -103,7 +74,7 @@ def coincidence_integral(
             output[i, :] = integrate.cumtrapz(y=x[i, :], dx=dt, initial=0)
             output[i, samples_integral:] -= output[i, :-samples_integral]
         else:
-            output[i, :] = integrate_signal(x[i, :], dt, samples_integral, method)
+            raise ValueError(f'method {method} is not supported.')
 
     return output
 

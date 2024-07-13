@@ -63,7 +63,7 @@ def _all_spikes_ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     n_inputs, samples = inputs.shape
     output = np.zeros(samples)
     for i in range(n_inputs):
-        output += inputs[i] * coincidence_prod / (coincidence_integral_outputs[i] + np.finfo.eps)
+        output += inputs[i] * coincidence_prod / (coincidence_integral_outputs[i] + np.finfo(np.float64))
     return output
 
 
