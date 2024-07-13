@@ -6,7 +6,7 @@ from cd_network.network import NeuralNetwork
 class TestNeuralNetwork(unittest.TestCase):
     def setUp(self):
         """Set up the Neural Network with a configuration path."""
-        self.config_path = r'config.json'
+        self.config_path = 'tests/config.json'
         self.network = NeuralNetwork(self.config_path)
         self.external_inputs = {
             'external1': np.random.randn(1000),  # Example external excitatory inputs
