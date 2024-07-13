@@ -1,10 +1,12 @@
 import numpy as np
+
 from coincidence_integral import coincidence_integral
 
 
 def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     """
-    Calculates the excitatory-inhibitory interaction.
+    The general EI cell spikes whenever the excitatory input spikes and in the preceding ∆ seconds none of the
+    inhibitory inputs spike.
 
     Parameters:
         excitatory_input (np.ndarray): 1D array of excitatory inputs.
@@ -28,14 +30,14 @@ def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: flo
     return output
 
 
-def ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
+def _ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     """
-    Calculates the simple excitatory-excitatory interaction.
+    Calculates the excitatory-excitatory interaction.
 
     Parameters:
         inputs (np.ndarray): 2D array of excitatory inputs.
-        fs (float): sampling frequency.
-        delta_s: coincidence integration duration in seconds.
+        fs (float): Sampling frequency.
+        delta_s: Coincidence integration duration in seconds.
 
     Returns:
         np.ndarray: Output after applying the excitatory-excitatory interaction.
@@ -49,4 +51,35 @@ def ee(inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     output = np.zeros(samples)
     for i in range(num_inputs):
         output += inputs[i] * coincidence_prod / coincidence_integral_outputs[i]
+    return output
+
+
+def ee(inputs, min_inputs: int, delta_s: float, fs: float) -> np.ndarray:
+    """
+    A general EE cell (depicted in Figure 2-6) has N excitatory inputs.
+    It generates a spike whenever at least min_input of its inputs spikes during an interval ∆.
+
+    Parameters
+        inputs (np.ndarray): 2D array of excitatory inputs.
+        min_inputs (int): Minimum number of inputs that must spike.
+        delta_s (float): Coincidence integration duration in seconds.
+        fs (float): Sampling frequency.
+
+    Returns:
+        np.ndarray: Output after applying the excitatory-excitatory interaction with the specified criteria.
+
+    Raises:
+        ValueError: If inputs are not 2D or if min_inputs exceeds the number of inputs.
+    """
+    if inputs.ndim != 2:
+        raise ValueError("Excitatory inputs must be a 2D array.")
+
+    num_inputs, samples = inputs.shape
+    if min_inputs > num_inputs:
+        raise ValueError("min_inputs should be less than or equal to the number of inputs.")
+
+    output = np.zeros(samples)
+    for i in range(min_inputs, num_inputs + 1):
+        output += _ee(inputs, delta_s, fs)
+
     return output
