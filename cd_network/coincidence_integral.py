@@ -23,7 +23,7 @@ def create_trapezoid_kernel(samples_integral: int) -> np.ndarray:
 
 
 def apply_filter(
-        x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable
+    x: np.ndarray, kernel: np.ndarray, dt: float, filter_func: Callable
 ) -> np.ndarray:
     """
     Apply a filtering function to an input signal using a specified kernel.
@@ -41,7 +41,7 @@ def apply_filter(
 
 
 def coincidence_integral(
-        x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt"
+    x: np.ndarray, integration_duration: float, fs: float, method: str = "filtfilt"
 ) -> np.ndarray:
     """
     Computes the coincidence integral of the input signal.
@@ -66,7 +66,7 @@ def coincidence_integral(
     if method in filter_methods:
         return filter_methods[method](x)
 
-    raise ValueError(f'method {method} is not supported.')
+    raise ValueError(f"method {method} is not supported.")
 
 
 @lru_cache(maxsize=None)
