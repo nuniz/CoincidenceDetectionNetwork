@@ -7,37 +7,36 @@ from .coincidence_integral import cached_coincidence_integral, coincidence_integ
 EPS = 1e-15
 
 
-def ei(
-        excitatory_input: np.ndarray,
-        inhibitory_inputs: np.ndarray,
-        delta_s: float,
-        fs: float,
-) -> np.ndarray:
+def ei(excitatory_input: np.ndarray, inhibitory_inputs: np.ndarray, delta_s: float, fs: float) -> np.ndarray:
     """
-    The general EI cell spikes whenever the excitatory input spikes and in the preceding ∆ seconds none of the
-    inhibitory inputs spike.
+    Computes the output of an excitatory-inhibitory (EI) cell. The EI cell generates a spike
+    based on the excitatory input, provided there are no spikes in the inhibitory inputs
+    within a specified time window preceding the excitatory spike.
 
     Parameters:
-        excitatory_input (np.ndarray): 1D array of excitatory inputs.
-        inhibitory_inputs (np.ndarray): 1D or 2D array of inhibitory inputs.
-        fs (float): sampling frequency.
-        delta_s: coincidence integration duration in seconds.
+        excitatory_input (np.ndarray): A 1D or 2D array containing the excitatory input signals.
+        inhibitory_inputs (np.ndarray): A 1D or 2D array containing the inhibitory input signals.
+        delta_s (float): The duration in seconds of the time window for checking inhibitory spikes.
+        fs (float): The sampling frequency in Hz.
 
     Returns:
-        np.ndarray: Output after applying the excitatory-inhibitory interaction.
-    """
-    assert excitatory_input.ndim == 1, "Excitatory input must be a 1D array."
-    assert inhibitory_inputs.ndim in [
-        1,
-        2,
-    ], "Inhibitory inputs must be either 1D or 2D array."
+        np.ndarray: An array representing the output of the EI cell after processing the inputs.
 
+    Raises:
+        AssertionError: If input dimensions do not meet the required 1D or 2D structure or
+                        if the length of excitatory input does not match the length of inhibitory inputs.
+    """
+    assert excitatory_input.ndim in [1, 2], "Excitatory input must be a 1D or 2D array."
+    if excitatory_input.ndim == 2:
+        assert excitatory_input.shape[0] == 1, "If 2D, excitatory input must have a single row."
+        excitatory_input = excitatory_input[0]
+
+    assert inhibitory_inputs.ndim in [1, 2], "Inhibitory inputs must be a 1D or 2D array."
     if inhibitory_inputs.ndim == 1:
         inhibitory_inputs = inhibitory_inputs[np.newaxis, ...]
 
-    assert (
-            len(excitatory_input) == inhibitory_inputs.shape[-1]
-    ), "Length of excitatory input must match the size of inhibitory inputs along the last axis."
+    assert len(excitatory_input) == inhibitory_inputs.shape[-1], \
+        "Length of excitatory input must match the size of inhibitory inputs along the last axis."
 
     output = excitatory_input * np.prod(
         1 - coincidence_integral(inhibitory_inputs, delta_s, fs), axis=0

@@ -1,6 +1,3 @@
-import configparser
-
-
 def validate_inputs(inputs, expected_dims, var_name="input"):
     """
     Validates the dimensions of the input array against a set of expected dimensions.
@@ -34,18 +31,3 @@ def hashable_input(inputs):
         tuple: A tuple of tuples, where each inner tuple represents a row from the input array.
     """
     return tuple(map(tuple, inputs))
-
-
-def load_config(config_file):
-    """
-    Load configuration settings from a specified file.
-
-    Parameters:
-        config_file (str): The path to the configuration file to be loaded.
-
-    Returns:
-        config : configparser.ConfigParser
-    """
-    config = configparser.ConfigParser()
-    config.read(config_file)
-    return config

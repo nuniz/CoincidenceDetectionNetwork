@@ -31,3 +31,4 @@ J Acoust Soc Am. 2009 Mar;125(3):1567-83. doi: 10.1121/1.3068446. PMID: 19275315
 
 from .cells import cd, ee, ei, simple_ee
 from .version import __version__
+# import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
