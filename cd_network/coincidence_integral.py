@@ -2,7 +2,7 @@ from functools import lru_cache
 from typing import Callable
 
 import numpy as np
-from scipy import integrate, signal
+from scipy import signal
 
 from .utils import hashable_input
 
@@ -66,17 +66,7 @@ def coincidence_integral(
     if method in filter_methods:
         return filter_methods[method](x)
 
-    num_inputs, num_samples = x.shape
-    output = np.zeros((num_inputs, num_samples))
-
-    for i in range(num_inputs):
-        if method == "cumtrapz":
-            output[i, :] = integrate.cumtrapz(y=x[i, :], dx=dt, initial=0)
-            output[i, samples_integral:] -= output[i, :-samples_integral]
-        else:
-            raise ValueError(f'method {method} is not supported.')
-
-    return output
+    raise ValueError(f'method {method} is not supported.')
 
 
 @lru_cache(maxsize=None)

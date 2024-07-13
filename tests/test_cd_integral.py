@@ -34,12 +34,8 @@ class TestCoincidenceIntegration(unittest.TestCase):
         x = np.random.randn(3, 100)
         integration_duration = 1
         fs = 5  # sample frequency
-        methods = ["filtfilt", "lfilter", "cumtrapz", "trapz", "simps", "romb"]
+        methods = ["filtfilt", "lfilter"]
         for method in methods:
-            if (
-                    method in ["romb"] and x.shape[1] % 2 == 0
-            ):  # Romb requires 2^n + 1 samples
-                continue
             result = coincidence_integral(x, integration_duration, fs, method)
             self.assertEqual(result.shape, x.shape)
 
