@@ -5,7 +5,7 @@ import numpy as np
 from .cells import cd, ee, ei, simple_ee
 
 
-class NeuralCell:
+class Neuron:
     def __init__(self, cell_type, cell_id, params, fs):
         self.cell_type = cell_type
         self.cell_id = cell_id
@@ -41,7 +41,7 @@ class NeuralCell:
             raise ValueError(f"Unknown cell type: {self.cell_type}")
 
 
-class NeuralNetwork:
+class CDNetwork:
     def __init__(self, config_path):
         self.cells = {}
         self.connections = []
@@ -52,7 +52,7 @@ class NeuralNetwork:
             config = json.load(f)
         fs = config["fs"]
         for cell_config in config["cells"]:
-            cell = NeuralCell(
+            cell = Neuron(
                 cell_type=cell_config["type"],
                 cell_id=cell_config["id"],
                 params=cell_config["params"],
@@ -61,7 +61,7 @@ class NeuralNetwork:
             self.cells[cell_config["id"]] = cell
         self.connections = config["connections"]
 
-    def run_network(self, external_inputs):
+    def __call__(self, external_inputs, *args, **kwargs):
         cell_outputs = {}
         # Initialize storage for each cell's inputs
         cell_inputs = {
@@ -70,7 +70,15 @@ class NeuralNetwork:
         }
 
         # Populate initial external inputs
+        ext_data_shape = None
         for ext_key, ext_data in external_inputs.items():
+            if ext_data_shape is None:
+                ext_data_shape = ext_data.shape
+            else:
+                if ext_data.shape != ext_data_shape:
+                    raise ValueError(
+                        f"Shape of external input '{ext_key}' does not match expected shape {ext_data_shape}")
+
             for conn in self.connections:
                 if conn["source"] == ext_key:
                     cell_inputs[conn["target"]][conn["input_type"]].append(ext_data)
