@@ -61,7 +61,7 @@ class CDNetwork:
             self.cells[cell_config["id"]] = cell
         self.connections = config["connections"]
 
-    def __call__(self, external_inputs, *args, **kwargs):
+    def __call__(self, external_inputs: dict, *args, **kwargs):
         cell_outputs = {}
         # Initialize storage for each cell's inputs
         cell_inputs = {
