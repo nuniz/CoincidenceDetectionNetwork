@@ -9,19 +9,22 @@ components.
 
 ## Features
 
+Each cell can run individually through its respective function (ei, simple_ee, ee, cd), or be configured via a network
+file to connect in a chosen sequence.
+
 ### Dynamic Connections (CD Network)
 
 Define how cells are interconnected within the network and how external inputs affect cell
-responses. 
+responses.
 
 ```python
 import numpy as np
-from cd_network.network import NeuralNetwork
+from cd_network.network import CDNetwork
 
 if __name__ == '__main__':
     # Load the neural network configuration from a JSON file
     config_path = r'config.json'  # Path to the configuration file
-    network = NeuralNetwork(config_path)
+    network = CDNetwork(config_path)
 
     # Define external inputs for the network
     external_inputs = {
@@ -31,7 +34,7 @@ if __name__ == '__main__':
     }
 
     # Run the network with the provided external inputs
-    outputs = network.run_network(external_inputs)
+    outputs = network(external_inputs)
 
     # Print the outputs of the network
     print(outputs)
@@ -54,7 +57,7 @@ The CD network simulation uses a JSON configuration file. Below is a breakdown o
         target: Identifier for the cell receiving the input.
         input_type: Specifies whether the input is excitatory or inhibitory.
 
-[Example Configuration File](examplenotebooks/config.yaml)
+[Example Configuration File](example_notebooks/config.yaml)
 
 ### CD Cells
 

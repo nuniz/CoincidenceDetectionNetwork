@@ -77,7 +77,8 @@ class CDNetwork:
             else:
                 if ext_data.shape != ext_data_shape:
                     raise ValueError(
-                        f"Shape of external input '{ext_key}' does not match expected shape {ext_data_shape}")
+                        f"Shape of external input '{ext_key}' does not match expected shape {ext_data_shape}"
+                    )
 
             for conn in self.connections:
                 if conn["source"] == ext_key:
