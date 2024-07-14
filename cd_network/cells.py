@@ -1,4 +1,5 @@
 from itertools import combinations
+from typing import Optional
 
 import numpy as np
 
@@ -179,7 +180,7 @@ def ee(inputs, n_spikes: int, delta_s: float, fs: float) -> np.ndarray:
 
 def cd(
     excitatory_inputs: np.ndarray,
-    inhibitory_inputs: np.ndarray,
+    inhibitory_inputs: Optional[np.ndarray],
     n_spikes: int,
     delta_s: float,
     fs: float,
@@ -190,8 +191,8 @@ def cd(
     excitatory spikes than inhibitory spikes
 
     Parameters
-        excitatory_inputs (np.ndarray): Excitatory input spikes, shape (n_excitatory_inputs, excitatory_samples).
-        inhibitory_inputs (np.ndarray): Inhibitory input spikes, shape (n_inhibitory_inputs, inhibitory_samples).
+        excitatory_inputs (np.ndarray): Excitatory input, shape (n_excitatory_inputs, excitatory_samples).
+        inhibitory_inputs Optional[np.ndarray]: Inhibitory input, shape (n_inhibitory_inputs, inhibitory_samples).
         n_spikes (int): Minimum excess of excitatory spikes over inhibitory spikes to generate an output spike.
         delta_s (float): Interval length ∆ in seconds.
         fs (float): Sampling frequency in Hz.
@@ -206,6 +207,9 @@ def cd(
         1,
         2,
     ], "Excitatory inputs must be either 1D or 2D array."
+
+    if inhibitory_inputs is None:
+        return ee(excitatory_inputs, n_spikes, delta_s, fs)
     assert inhibitory_inputs.ndim in [
         1,
         2,
