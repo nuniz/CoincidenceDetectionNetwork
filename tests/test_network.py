@@ -2,14 +2,14 @@ import unittest
 
 import numpy as np
 
-from cd_network.network import NeuralNetwork
+from cd_network.network import CDNetwork
 
 
 class TestNeuralNetwork(unittest.TestCase):
     def setUp(self):
         """Set up the Neural Network with a configuration path."""
         self.config_path = "tests/config.json"
-        self.network = NeuralNetwork(self.config_path)
+        self.network = CDNetwork(self.config_path)
         self.external_inputs = {
             "external1": np.random.randn(1000),  # Example external excitatory inputs
             "external2": np.random.randn(1000),  # Example external inhibitory inputs
@@ -18,7 +18,7 @@ class TestNeuralNetwork(unittest.TestCase):
 
     def test_run_network(self):
         """Test that the network runs and outputs in the correct format, with keys for cells."""
-        outputs = self.network.run_network(self.external_inputs)
+        outputs = self.network(self.external_inputs)
 
         # Check that outputs is a dictionary
         self.assertIsInstance(outputs, dict, "Output should be a dictionary.")
