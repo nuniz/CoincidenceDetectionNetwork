@@ -30,9 +30,10 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     python_requires=">=3.6",
-    install_requires=["numpy<2", "scipy"],
+    entry_points={"console_scripts": ["cd_network = cd_network.run:main"]},
+    install_requires=["numpy<2", "scipy", "matplotlib", "networkx"],
     extras_require={
-        "dev": ["pytest", "check-manifest", "pre-commit", "matplotlib"],
+        "dev": ["pytest", "check-manifest", "pre-commit"],
         "test": ["pytest", "coverage"],
     },
 )

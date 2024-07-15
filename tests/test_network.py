@@ -8,8 +8,14 @@ from cd_network.network import CDNetwork
 class TestNeuralNetwork(unittest.TestCase):
     def setUp(self):
         """Set up the Neural Network with a configuration path."""
-        self.config_path = "tests/config.json"
-        self.network = CDNetwork(self.config_path)
+        try:
+            self.config_path = "tests/config.json"
+            self.network = CDNetwork(self.config_path)
+        except Exception as e:
+            print(f"Load config locally, {e}")
+            self.config_path = "config.json"
+            self.network = CDNetwork(self.config_path)
+
         self.external_inputs = {
             "external1": np.random.randn(1000),  # Example external excitatory inputs
             "external2": np.random.randn(1000),  # Example external inhibitory inputs
