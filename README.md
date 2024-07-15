@@ -1,11 +1,11 @@
 # CD-Network
 
-CD-Network is a Python library designed for the analytical derivation of the stochastic output of coincidence detection 
-(CD) cells.
-These cells receive inputs modeled as non-homogeneous Poisson processes (NHPP) with both excitatory and inhibitory
-components.
+CD-Network is a Python library designed for the analytical derivation of the stochastic output (*instantaneous rate*) of coincidence detection 
+(CD) neurons.
 
 ![cd_scheme](cd.png)
+
+[Notes](notes.pdf)
 
 ## Features
 
@@ -39,6 +39,11 @@ if __name__ == '__main__':
     # Print the outputs of the network
     print(outputs)
 
+```
+
+To visualize the network's connections, use:
+```python
+network.plot_network_connections()
 ```
 
 ### Configuration File
