@@ -79,6 +79,37 @@ class CDNetwork:
             self.cells[cell_config["id"]] = cell
         self.connections = config["connections"]
 
+    def plot_network_connections(self):
+        """
+        Plot the network connections using NetworkX and Matplotlib.
+        """
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
+        G = nx.DiGraph()
+        for cell_id in self.cells:
+            cell_type = self.cells[cell_id].cell_type
+            color_map = {'excitatory': 'green', 'inhibitory': 'red'}
+            node_color = color_map.get(cell_type, 'skyblue')
+            G.add_node(cell_id, label=f"({cell_type})", color=node_color)
+        for conn in self.connections:
+            G.add_edge(conn["source"], conn["target"], label=conn["input_type"])
+
+        pos = nx.spring_layout(G)  # Consider changing the layout for large networks
+        colors = ([G.nodes[node].get('color', 'white') for node in G.nodes()])
+        nx.draw_networkx_nodes(G, pos, node_size=5000, node_color=colors, alpha=1)  # edgecolors='black'
+
+        node_labels = {node: f"{node} \n {G.nodes[node].get('label', '')}" for node in G.nodes()}
+        nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=12)
+
+        nx.draw_networkx_edges(G, pos, arrowstyle="-|>", arrowsize=20, edge_color="gray")
+        edge_labels = {(u, v): d['label'] for u, v, d in G.edges(data=True)}
+        nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color="red")
+
+        plt.title("CDNetwork Connections")
+        plt.axis("off")
+        plt.show()
+
     def __call__(self, external_inputs: Dict[str, np.ndarray], *args, **kwargs):
         cell_outputs = {}
         cell_inputs = {

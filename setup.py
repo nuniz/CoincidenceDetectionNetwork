@@ -31,9 +31,9 @@ setuptools.setup(
     ],
     python_requires=">=3.6",
     entry_points={"console_scripts": ["cd_network = cd_network.run:main"]},
-    install_requires=["numpy<2", "scipy"],
+    install_requires=["numpy<2", "scipy", "matplotlib", "networkx"],
     extras_require={
-        "dev": ["pytest", "check-manifest", "pre-commit", "matplotlib"],
+        "dev": ["pytest", "check-manifest", "pre-commit"],
         "test": ["pytest", "coverage"],
     },
 )
