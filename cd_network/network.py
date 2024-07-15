@@ -1,4 +1,6 @@
 import json
+from collections import defaultdict, deque
+from typing import Any, Dict, Union
 
 import numpy as np
 
@@ -6,15 +8,15 @@ from .cells import cd, ee, ei, simple_ee
 
 
 class Neuron:
-    def __init__(self, cell_type, cell_id, params, fs):
+    def __init__(self, cell_type: str, cell_id: str, params: Dict[str, Any], fs: float):
         self.cell_type = cell_type
         self.cell_id = cell_id
         self.params = params
         self.fs = fs
 
-    def compute_output(self, inputs):
-        excitatory_inputs = inputs.get("excitatory", None)
-        inhibitory_inputs = inputs.get("inhibitory", None)
+    def __call__(self, inputs: Dict[str, np.ndarray], *args, **kwargs) -> np.ndarray:
+        excitatory_inputs = inputs.get("excitatory")
+        inhibitory_inputs = inputs.get("inhibitory")
 
         if self.cell_type == "ei":
             return ei(
@@ -42,14 +44,30 @@ class Neuron:
 
 
 class CDNetwork:
-    def __init__(self, config_path):
+    def __init__(self, config: Union[Dict[str, Any], str]):
+        """Initialize the network with a configuration dictionary or a path to a configuration JSON file."""
         self.cells = {}
         self.connections = []
-        self.load_config(config_path)
+        self.load_config(config)
 
-    def load_config(self, config_path):
-        with open(config_path, "r") as f:
-            config = json.load(f)
+    def load_config(self, config: Union[Dict[str, Any], str]):
+        """Load and parse the configuration from a dictionary or a JSON file."""
+        if isinstance(config, str):
+            try:
+                with open(config, "r") as file:
+                    config = json.load(file)
+            except FileNotFoundError:
+                raise FileNotFoundError(
+                    f"The configuration file {config} was not found."
+                )
+            except json.JSONDecodeError:
+                raise ValueError("Invalid JSON format in the configuration file.")
+
+        if not isinstance(config, dict):
+            raise ValueError(
+                "Configuration must be a dictionary or a path to a JSON file."
+            )
+
         fs = config["fs"]
         for cell_config in config["cells"]:
             cell = Neuron(
@@ -61,15 +79,14 @@ class CDNetwork:
             self.cells[cell_config["id"]] = cell
         self.connections = config["connections"]
 
-    def __call__(self, external_inputs: dict, *args, **kwargs):
+    def __call__(self, external_inputs: Dict[str, np.ndarray], *args, **kwargs):
         cell_outputs = {}
-        # Initialize storage for each cell's inputs
         cell_inputs = {
             cell_id: {"excitatory": [], "inhibitory": []}
             for cell_id in self.cells.keys()
         }
 
-        # Populate initial external inputs
+        # Process external inputs
         ext_data_shape = None
         for ext_key, ext_data in external_inputs.items():
             if ext_data_shape is None:
