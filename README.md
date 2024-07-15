@@ -7,6 +7,9 @@ CD-Network is a Python library designed for the analytical derivation of the sto
 
 [Notes](notes.pdf)
 
+[![DOI](https://zenodo.org/badge/825434947.svg)](https://zenodo.org/doi/10.5281/zenodo.12746265)
+
+
 ## Features
 
 Each cell can run individually through its respective function (ei, simple_ee, ee, cd), or be configured via a network
@@ -148,7 +151,25 @@ run pre-commit to check all files in the repo.
 pre-commit run --all-files
 ```
 
-## Reference
+## Citation
+If you use this software, please cite it as below.
 
+```
+@software{asaf_zorea_2023_8004059,
+  author       = {Asaf Zorea},
+  title        = {CoincidenceDetectionNetwork: Analytical derivation of the stochastic output of coincidence detection neurons},
+  month        = jun,
+  year         = 2024,
+  publisher    = {Zenodo},
+  version      = {v0.1.4},
+  doi          = {10.5281/zenodo.12746266},
+  url          = {https://doi.org/10.5281/zenodo.12746266}
+}
+```
+
+Krips R, Furst M. Stochastic properties of coincidence-detector neural cells. Neural Comput. 2009 Sep;21(9):2524-53. 
+doi: 10.1162/neco.2009.07-07-563. PMID: 19548801.
+
+## Further Readings
 Krips R, Furst M. Stochastic properties of auditory brainstem coincidence detectors in binaural perception.
 J Acoust Soc Am. 2009 Mar;125(3):1567-83. doi: 10.1121/1.3068446. PMID: 19275315.
