@@ -4,6 +4,7 @@ CD-Network is a Python library designed for the analytical derivation of the sto
 (CD) neurons.
 
 ![cd_scheme](cd.png)
+
 [Notes](notes.pdf)
 
 ## Features
