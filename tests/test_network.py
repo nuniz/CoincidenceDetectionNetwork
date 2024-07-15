@@ -12,7 +12,7 @@ class TestNeuralNetwork(unittest.TestCase):
             self.config_path = "tests/config.json"
             self.network = CDNetwork(self.config_path)
         except Exception as e:
-            print(f'Load config locally, {e}')
+            print(f"Load config locally, {e}")
             self.config_path = "config.json"
             self.network = CDNetwork(self.config_path)
 
