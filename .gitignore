@@ -18,3 +18,6 @@
 /.idea/*
 /local_history.patch
 /notebooks/.ipynb_checkpoints/*
+
+*.txt
+PKG-INFO
