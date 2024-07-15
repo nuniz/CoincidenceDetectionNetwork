@@ -101,49 +101,54 @@ class CDNetwork:
                 if conn["source"] == ext_key:
                     cell_inputs[conn["target"]][conn["input_type"]].append(ext_data)
 
-        # Process each cell once all inputs are ready
-        cells_to_process = list(self.cells.keys())
-        while cells_to_process:
-            processed_cells = []
-            for cell_id in cells_to_process:
-                # Check if all inputs are available
-                inputs_ready = True
-                for conn in self.connections:
-                    if conn["target"] == cell_id and not conn["source"].startswith(
-                        "external"
-                    ):
-                        if cell_outputs.get(conn["source"]) is None:
-                            inputs_ready = False
-                            break
-                if inputs_ready:
-                    # Gather inputs from sources
-                    for conn in self.connections:
-                        if conn["target"] == cell_id and not conn["source"].startswith(
-                            "external"
-                        ):
-                            cell_inputs[cell_id][conn["input_type"]].append(
-                                cell_outputs[conn["source"]]
-                            )
-                    # Compute outputs
-                    excitatory_input = (
-                        np.vstack(cell_inputs[cell_id]["excitatory"])
-                        if cell_inputs[cell_id]["excitatory"]
-                        else None
+        # Build adjacency list and compute in-degree
+        graph = defaultdict(list)
+        in_degree = {cell_id: 0 for cell_id in self.cells}
+        for conn in self.connections:
+            if conn["source"] in self.cells:
+                graph[conn["source"]].append((conn["target"], conn["input_type"]))
+                in_degree[conn["target"]] += 1
+
+        # Initialize queue with cells that have no incoming edges
+        process_queue = deque(
+            [cell_id for cell_id, degree in in_degree.items() if degree == 0]
+        )
+
+        while process_queue:
+            cell_id = process_queue.popleft()
+            # Process each cell's inputs
+            for conn in self.connections:
+                if conn["target"] == cell_id and conn["source"] in cell_outputs:
+                    cell_inputs[cell_id][conn["input_type"]].append(
+                        cell_outputs[conn["source"]]
                     )
-                    inhibitory_input = (
-                        np.vstack(cell_inputs[cell_id]["inhibitory"])
-                        if cell_inputs[cell_id]["inhibitory"]
-                        else None
-                    )
-                    cell = self.cells[cell_id]
-                    output = cell.compute_output(
-                        {"excitatory": excitatory_input, "inhibitory": inhibitory_input}
-                    )
-                    cell_outputs[cell_id] = output
-                    processed_cells.append(cell_id)
-            # Update the list of cells to process by removing those already processed
-            cells_to_process = [
-                cell for cell in cells_to_process if cell not in processed_cells
-            ]
+
+            # Compute outputs for current cell
+            excitatory_input = (
+                np.vstack(cell_inputs[cell_id]["excitatory"])
+                if cell_inputs[cell_id]["excitatory"]
+                else None
+            )
+            inhibitory_input = (
+                np.vstack(cell_inputs[cell_id]["inhibitory"])
+                if cell_inputs[cell_id]["inhibitory"]
+                else None
+            )
+            output = self.cells[cell_id](
+                {"excitatory": excitatory_input, "inhibitory": inhibitory_input}
+            )
+            cell_outputs[cell_id] = output
+
+            # Decrement in-degrees of successors and enqueue if in-degree becomes zero
+            for target, input_type in graph[cell_id]:
+                in_degree[target] -= 1
+                if in_degree[target] == 0:
+                    process_queue.append(target)
+
+        # Check for unresolved dependencies (indicates a cycle or misconfiguration)
+        if any(degree > 0 for degree in in_degree.values()):
+            raise RuntimeError(
+                "A deadlock was detected in the network due to unresolved dependencies or cycles."
+            )
 
         return cell_outputs
