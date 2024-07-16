@@ -13,7 +13,7 @@ CD-Network is a Python library designed for the analytical derivation of the sto
 ## Features
 
 Each cell can run individually through its respective function (ei, simple_ee, ee, cd), or be configured via a network
-file to connect in a chosen network.
+file.
 
 ### Dynamic Connections (CD Network)
 
