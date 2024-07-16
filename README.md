@@ -1,19 +1,19 @@
 # CD-Network
 
-CD-Network is a Python library designed for the analytical derivation of the stochastic output (*instantaneous rate*) of coincidence detection 
-(CD) neurons.
+CD-Network is a Python library designed for the analytical derivation of the stochastic output (*instantaneous spikes rate*) of coincidence detection 
+(CD) neurons, based on non-homogeneous Poisson processes.
+
+[![DOI](https://zenodo.org/badge/825434947.svg)](https://zenodo.org/doi/10.5281/zenodo.12746265)
 
 ![cd_scheme](cd.png)
 
-[Notes](notes.pdf)
 
-[![DOI](https://zenodo.org/badge/825434947.svg)](https://zenodo.org/doi/10.5281/zenodo.12746265)
 
 
 ## Features
 
 Each cell can run individually through its respective function (ei, simple_ee, ee, cd), or be configured via a network
-file to connect in a chosen sequence.
+file to connect in a chosen network.
 
 ### Dynamic Connections (CD Network)
 
@@ -51,7 +51,7 @@ network.plot_network_connections()
 
 ### Configuration File
 
-The CD network simulation uses a JSON configuration file. Below is a breakdown of the configuration structure:
+The CD network uses a JSON configuration file. Below is a breakdown of the configuration structure:
 
     fs: Sampling frequency in Hz. This value is used across all cells for time-based calculations.
 
@@ -68,6 +68,7 @@ The CD network simulation uses a JSON configuration file. Below is a breakdown o
 [Example Configuration File](example_notebooks/config.json)
 
 ### CD Cells
+[My notes about CD neurons](notes.pdf)
 
 #### `ei(excitatory_input, inhibitory_inputs, delta_s, fs)`
 
@@ -86,7 +87,7 @@ specified time window from the inhibitory inputs.
 
 #### `simple_ee(inputs, delta_s, fs)`
 
-Simplifies the model of excitatory-excitatory (EE) interaction where an output spike is generated whenever both inputs
+Simplifies the model of excitatory-excitatory (EE) interaction where an output spikes rate is generated whenever both inputs
 spike within a specified time interval.
 
 - **Parameters:**
@@ -113,13 +114,13 @@ spike simultaneously within a specific time interval.
 
 #### `cd(excitatory_inputs, inhibitory_inputs, n_spikes, delta_s, fs)`
 
-Models the output of a coincidence detector (CD) cell which generates spikes based on the relative timing and number of
+Models the output of a coincidence detector (CD) cell which generates spikes rate based on the relative timing and number of
 excitatory and inhibitory inputs within a defined interval.
 
 - **Parameters:**
     - `excitatory_inputs (np.ndarray)`: 2D array of excitatory input instantaneous rates.
     - `inhibitory_inputs (np.ndarray)`: 2D array of inhibitory input instantaneous rates.
-    - `n_spikes (int)`: Minimum excess of excitatory spikes over inhibitory spikes required to generate an output spike.
+    - `n_spikes (int)`: Minimum excess of excitatory spikes over inhibitory spikes required to generate an output spikes rate.
     - `delta_s (float)`: Interval length in seconds.
     - `fs (float)`: Sampling frequency in Hz.
 
@@ -145,7 +146,7 @@ pip install .
 
 ## Contribution
 
-run pre-commit to check all files in the repo.
+Before contributing, run pre-commit to check all files in the repo.
 
 ```bash 
 pre-commit run --all-files
@@ -171,5 +172,8 @@ Krips R, Furst M. Stochastic properties of coincidence-detector neural cells. Ne
 doi: 10.1162/neco.2009.07-07-563. PMID: 19548801.
 
 ## Further Readings
+Zorea Asaf, and Miriam Furst. Contribution of Coincidence Detection to Speech Segregation in Noisy Environments. 
+arXiv:2405.06072, arXiv, 9 May 2024. arXiv.org, https://doi.org/10.48550/arXiv.2405.06072.
+
 Krips R, Furst M. Stochastic properties of auditory brainstem coincidence detectors in binaural perception.
 J Acoust Soc Am. 2009 Mar;125(3):1567-83. doi: 10.1121/1.3068446. PMID: 19275315.
